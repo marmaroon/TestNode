@@ -1,4 +1,6 @@
+const { rejects } = require('assert')
 const fs = require('fs')
+const { resolve } = require('path')
 const path = require('path')
 
 // console.log('START')
@@ -20,9 +22,40 @@ const path = require('path')
 //     console.log('Папка удалена')
 // })
 
-fs.writeFile(path.resolve(__dirname, 'test.txt'), '5 qwerty 7 9 10', (err) => {
-    if(err) {
-        throw err;
-    }
-    console.log('Файл записан')
-})
+// fs.writeFile(path.resolve(__dirname, 'test.txt'), '5 qwerty 7 9 10 цуцку', (err) => {
+//     if(err) {
+//         throw err;
+//     }
+//     fs.appendFile(path.resolve(__dirname, 'test.txt'), 'ADD SOME TEXT', (err) => {
+//         if(err) {
+//             throw err;
+//         }
+//         console.log('Файл записан')
+//     })
+// })
+
+
+const writeFileAsync = async (path, data) => {
+    return new Promise((resolve, reject)  => fs.writeFile(path, data, (err) => {
+        if(err) {
+            return reject(err.message)
+        }
+        resolve()
+
+    }))
+}
+
+const appendFileAsync = async (path, data) => {
+    return new Promise((resolve, reject)  => fs.appendFile(path, data, (err) => {
+        if(err) {
+            return reject(err.message)
+        }
+        resolve()
+    }))
+}
+
+writeFileAsync(path.resolve(__dirname, 'test.txt'), 'data')
+    .then(() => appendFileAsync(path.resolve(__dirname, 'test.txt'), '123'))
+    .then(() => appendFileAsync(path.resolve(__dirname, 'test.txt'), '456'))
+    .then(() => appendFileAsync(path.resolve(__dirname, 'test.txt'), '578'))
+    .catch(err => console.log(err))
