@@ -1,7 +1,6 @@
-const { rejects } = require('assert')
 const fs = require('fs')
-const { resolve } = require('path')
 const path = require('path')
+const e = require("express");
 
 // console.log('START')
 
@@ -63,10 +62,36 @@ const readFileAsync = async (path) => {
     }))
 }
 
-writeFileAsync(path.resolve(__dirname, 'test.txt'), 'data')
-    .then(() => appendFileAsync(path.resolve(__dirname, 'test.txt'), '123'))
-    .then(() => appendFileAsync(path.resolve(__dirname, 'test.txt'), '456'))
-    .then(() => appendFileAsync(path.resolve(__dirname, 'test.txt'), '578'))
-    .then(() => readFileAsync(path.resolve(__dirname, 'test.txt')))
-    .then(data => console.log(data))
-    .catch(err => console.log(err))
+
+const removeFileAsync = async (path) => {
+    return new Promise((resolve, reject)  => fs.rm(path, (err) => {
+        if(err) {
+            return reject(err.message)
+        }
+        resolve()
+    }))
+}
+
+// writeFileAsync(path.resolve(__dirname, 'test.txt'), 'data')
+//     .then(() => appendFileAsync(path.resolve(__dirname, 'test.txt'), '123'))
+//     .then(() => appendFileAsync(path.resolve(__dirname, 'test.txt'), '456'))
+//     .then(() => appendFileAsync(path.resolve(__dirname, 'test.txt'), '578'))
+//     .then(() => readFileAsync(path.resolve(__dirname, 'test.txt')))
+//     .then(data => console.log(data))
+//     .catch(err => console.log(err))
+
+// removeFileAsync(path.resolve(__dirname, 'test.txt'))
+//     .then(() => console.log('file was removed'))
+
+
+// Через переменную окружения передать строку, записать ее в файл
+// прочитать файл, посчитать колво слов в файле и записать
+// их в новый файл count.txt, затем удалить первый файл 
+
+const text = process.env.TEXT || '';
+
+writeFileAsync(path.resolve(__dirname, 'text.txt'), text)
+    .then(() => readFileAsync(path.resolve(__dirname, 'text.txt')))
+    .then(data => data.split(' ').length)
+    .then(count => writeFileAsync(path.resolve(__dirname, 'count.txt'), `Кол-во слов ${count}`))
+    .then(() => removeFileAsync(path.resolve(__dirname, 'text.txt')))
